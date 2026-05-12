@@ -1,53 +1,46 @@
-import random
+def get_settings():
+    import random
 
-print("Choose difficulty:")
-print("1. Easy (1–50, 10 tries)")
-print("2. Medium (1–100, 7 tries)")
-print("3. Hard (1–200, 5 tries)")
+    choice = input("Select difficulty (1/2/3): ")
 
-choice = input("Select (1/2/3): ")
+    if choice == "1":
+        return random.randint(1, 10), 5
+    elif choice == "2":
+        return random.randint(1, 10), 3
+    else:
+        return random.randint(1, 10), 1
+    
+def play_game(secret_number, max_attemps):
+        guess = 0
+        attempts = 0
 
-# Difficulty setup
-if choice == "1":
-    secret_number = random.randint(1, 50)
-    max_attempts = 10
+        while guess != secret_number and attempts < max_attempts:
 
-elif choice == "2":
-    secret_number = random.randint(1, 100)
-    max_attempts = 7
+            while True:
+                try:
+                    guess = int(input("Enter your guess: "))
+                    break
+                except ValueError:
+                    print("Enter a valid number")
 
-else:
-    secret_number = random.randint(1, 200)
-    max_attempts = 5
+            attempts += 1
 
-print("I picked a number!")
+            if guess > secret_number:
+                print("Too High")
+            elif guess < secret_number:
+                print("Too Low")
 
-guess = 0
-attempts = 0
+        return guess == secret_number, attempts
 
-# Game loop
-while guess != secret_number and attempts < max_attempts:
+secret_number, max_attempts = get_settings()
 
-    while True:
-        try:
-            guess = int(input("Enter your guess: "))
-            break
-        except ValueError:
-            print("Please enter a valid number.")
+print("Game started!")
 
-    attempts += 1
+won, attempts = play_game(secret_number, max_attempts)
 
-    if guess > secret_number:
-        print("Too high!")
-
-    elif guess < secret_number:
-        print("Too low!")
-
-# Final result
-if guess == secret_number:
+if won:
     print("Correct!")
-    print("Attempts used:", attempts)
-
+    print("Attempts: ", attempts)
 else:
     print("Game Over!")
-    print("The number was:", secret_number)
+    print("Number was: ", secret_number)
