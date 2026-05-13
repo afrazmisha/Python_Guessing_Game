@@ -1,21 +1,32 @@
-def get_settings():
-    import random
+import random
 
-    choice = input("Select difficulty (1/2/3): ")
+class NumberGuessingGame:
+    def __init__(self):
+        self.secret_number = None
+        self.max_attempts = None
 
-    if choice == "1":
-        return random.randint(1, 10), 5
-    elif choice == "2":
-        return random.randint(1, 10), 3
-    else:
-        return random.randint(1, 10), 1
-    
-def play_game(secret_number, max_attemps):
+    def get_settings(self):
+
+        choice = input("Select difficulty (1/2/3): ")
+
+        if choice == "1":
+            self.secret_number = random.randint(1, 10)
+            self.max_attempts = 5
+
+        elif choice == "2":
+            self.secret_number = random.randint(1, 10)
+            self.max_attempts = 3
+
+        else:
+            self.secret_number = random.randint(1, 10)
+            self.max_attempts = 1
+
+    def play_game(self):
         guess = 0
         attempts = 0
 
-        while guess != secret_number and attempts < max_attempts:
-
+        while guess != self.secret_number and attempts < self.max_attempts:
+            
             while True:
                 try:
                     guess = int(input("Enter your guess: "))
@@ -25,22 +36,31 @@ def play_game(secret_number, max_attemps):
 
             attempts += 1
 
-            if guess > secret_number:
+            if guess > self.secret_number:
                 print("Too High")
-            elif guess < secret_number:
+            elif guess < self.secret_number:
                 print("Too Low")
 
-        return guess == secret_number, attempts
+        return guess == self.secret_number, attempts
+    
+    def run(self):
+        play_again = "yes"
 
-secret_number, max_attempts = get_settings()
+        while play_again == "yes":
+            self.get_settings()
 
-print("Game started!")
+            print("Game Started!")
 
-won, attempts = play_game(secret_number, max_attempts)
+            won, attempts = self.play_game()
 
-if won:
-    print("Correct!")
-    print("Attempts: ", attempts)
-else:
-    print("Game Over!")
-    print("Number was: ", secret_number)
+            if won:
+                print("Correct!")
+                print("Attempts: ", attempts)
+            else:
+                print("Game Over!")
+                print("Number was: ", self.secret_number)
+
+            play_again = input("Play again? (yes/no): ")
+
+game = NumberGuessingGame()
+game.run()
