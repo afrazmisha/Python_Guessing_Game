@@ -1,31 +1,36 @@
 import random
+from config import DIFFICULTIES
 
 class NumberGuessingGame:
     def __init__(self):
         self.secret_number = None
         self.max_attempts = None
         self.max_number = None
+        self.base_score = 0
+        self.score = 0
 
     def get_settings(self):
         while True:
-            print("Select Difficulty - Easy (1), Medium (2), Hard (3): ")
-            choice = input("Select (1/2/3): ")
+            print("Select Difficulty")
+            
+            for key, settings in DIFFICULTIES.items():
+                print(f"{key}. {settings['name']}")
+            
+            choice = input("Select Difficulty: ")
 
-            if choice in ["1", "2", "3"]:
+            if choice in DIFFICULTIES:
                 break
+
             print("Invalid choice. Try again.")
 
-        if choice == "1":
-            self.max_number = 10
-            self.max_attempts = 5
-        elif choice == "2":
-            self.max_number = 50
-            self.max_attempts = 3
-        else:
-            self.max_number = 100
-            self.max_attempts = 2
+        settings = DIFFICULTIES[choice]
+        
+        self.max_number = settings["max_number"]
+        self.max_attempts = settings["max_attempts"]
+        self.base_score = settings["base_score"]
 
         self.secret_number = random.randint(1, self.max_number)
+        
         print(f"Guess a number between 1 and {self.max_number}")
         print(f"Attempts allowed: {self.max_attempts}")
 
@@ -65,7 +70,11 @@ class NumberGuessingGame:
             won, attempts = self.play_game()
 
             if won:
+                self.score = self.base_score - (attempts * 10)
+
                 print("Correct!")
+                print("Attempts: ", attempts)
+                print("Score: ", self.score)
             else:
                 print("Game Over! Number was:", self.secret_number)
 
