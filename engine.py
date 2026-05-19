@@ -8,6 +8,7 @@ class NumberGuessingGame:
         self.max_number = None
         self.base_score = 0
         self.score = 0
+        self.best_score = self.load_best_score()
 
     def get_settings(self):
         while True:
@@ -75,9 +76,27 @@ class NumberGuessingGame:
                 print("Correct!")
                 print("Attempts: ", attempts)
                 print("Score: ", self.score)
+                print("Best Score: ", self.best_score)
+
+                if self.score > self.best_score:
+                    print("New High Score!")
+                    self.best_score = self.score
+                    self.save_best_score(self.best_score)
+                    
             else:
                 print("Game Over! Number was:", self.secret_number)
 
             again = input("Play again? (yes/no): ").strip().lower()
             if again != "yes":
                 break
+
+    def load_best_score(self):
+        try:
+            with open("score.txt", "r") as file:
+                return int(file.read().strip())
+        except:
+            return 0
+        
+    def save_best_score(self, score):
+        with open("score.txt", "w") as file:
+            file.write(str(score))
