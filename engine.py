@@ -9,6 +9,10 @@ class NumberGuessingGame:
         self.base_score = 0
         self.score = 0
         self.best_score = self.load_best_score()
+        self.games_played = 0
+        self.wins = 0
+        self.total_attempts = 0
+        self.load_stats()
 
     def get_settings(self):
         while True:
@@ -70,23 +74,44 @@ class NumberGuessingGame:
 
             won, attempts = self.play_game()
 
+            self.games_played += 1
+            self.total_attempts += attempts
+
             if won:
-                self.score = self.base_score - (attempts * 10)
+                self.wins += 1
+
+            self.save_stats()
+
+            if won:
+                self.score = max(0, self.base_score - (attempts * 10))
 
                 print("Correct!")
                 print("Attempts: ", attempts)
                 print("Score: ", self.score)
-                print("Best Score: ", self.best_score)
 
                 if self.score > self.best_score:
                     print("New High Score!")
                     self.best_score = self.score
                     self.save_best_score(self.best_score)
+
+                print("Best Score: ", self.best_score)
                     
             else:
                 print("Game Over! Number was:", self.secret_number)
 
+            losses = self.games_played - self.wins
+            average_attempts = self.total_attempts / self.games_played
+            win_rate = (self.wins / self.games_played) * 100
+
+            print("\n=== Statistics ===")
+            print("Games Played: ", self.games_played)
+            print("Wins: ", self.wins)
+            print("Losses: ", losses)
+            print(f"Average Attempts: {average_attempts:.2f}")
+            print(f"Win Rate: {win_rate:.2f}%")
+
             again = input("Play again? (yes/no): ").strip().lower()
+
             if again != "yes":
                 break
 
@@ -94,9 +119,29 @@ class NumberGuessingGame:
         try:
             with open("score.txt", "r") as file:
                 return int(file.read().strip())
-        except:
+        except FileNotFoundError:
             return 0
         
     def save_best_score(self, score):
         with open("score.txt", "w") as file:
             file.write(str(score))
+
+    def load_stats(self):
+        try:
+            with open("stats.txt", "r") as file:
+                lines = file.readlines()
+
+                self.games_played = int(lines[0].strip())
+                self.wins = int(lines[1].strip())
+                self.total_attempts = int(lines[2].strip())
+
+        except FileNotFoundError:
+            self.games_played = 0
+            self.wins = 0
+            self.total_attempts = 0
+
+    def save_stats(self):
+        with open("stats.txt", "w") as file:
+            file.write(f"{self.games_played}\n")
+            file.write(f"{self.wins}\n")
+            file.write(f"{self.total_attempts}\n")
