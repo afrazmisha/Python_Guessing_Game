@@ -63,7 +63,7 @@ class NumberGuessingGame:
             elif guess < self.secret_number:
                 print("Too Low")
             else:
-                break
+                return True, attempts
 
             if remaining > 0:
                 print("Attempts remaining:", remaining)
@@ -103,24 +103,22 @@ class NumberGuessingGame:
             if again != "yes":
                 break
 
-            #-----
-            def save_stats(self):
-                if self.games_played == 0:
-                    return
 
-                losses = self.games_played - self.wins
-                average_attempts = self.total_attempts / self.games_played
-                win_rate = (self.wins / self.games_played) * 100
-
-                print("\n=== Statistics ===")
-                print("Games Played: ", self.games_played)
-                print("Wins: ", self.wins)
-                print("Losses: ", losses)
-                print(f"Average Attempts: {average_attempts:.2f}")
-                print(f"Win Rate: {win_rate:.2f}%")
-
-            
+    def show_stats(self):
+        if self.games_played == 0:
+            return
         
+        losses = self.games_played - self.wins
+        average_attempts = self.total_attempts / self.games_played
+        win_rate = (self.wins / self.games_played) * 100
+        
+        print("\n=== Statistics ===")
+        print("Games Played:", self.games_played)
+        print("Wins:", self.wins)
+        print("Losses:", losses)
+        print(f"Average Attempts: {average_attempts:.2f}")
+        print(f"Win Rate: {win_rate:.2f}%")
+
     def load_best_score(self):
         try:
             with open("score.txt", "r") as f:
@@ -136,9 +134,15 @@ class NumberGuessingGame:
         try:
             with open("stats.txt", "r") as f:
                 lines = f.readlines()
-                self.games_played = int(lines[1])
-                self.total_attempts = int(lines(2))
-        except FileNotFoundError:
+
+                if len(lines) < 3:
+                    raise ValueError
+                
+                self.games_played = int(lines[0])
+                self.wins = int(lines[1])
+                self.total_attempts = int(lines[2])
+
+        except (FileNotFoundError, ValueError):
             self.games_played = 0
             self.wins = 0
             self.total_attempts = 0
