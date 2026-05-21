@@ -1,4 +1,10 @@
-from engine import NumberGuessingGame
+from ui import GameUI
 
-game = NumberGuessingGame()
-game.run()
+game = GameUI()
+
+while True:
+    game.play()
+
+    again = input("\nPlay again? (yes/no): ").lower()
+    if again != "yes":
+        break
