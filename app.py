@@ -9,10 +9,12 @@ app.secret_key = "secret-key"
 def index():
     return render_template(
         "index.html",
-        difficulties=DIFFICULTIES
+        difficulties=DIFFICULTIES,
+        game_started=False,
+        result=None
     )
 
-@app.route("/start", method=["POST"])
+@app.route("/start", methods=["POST"])
 def start():
     difficulty = request.form["difficulty"]
 
@@ -29,6 +31,7 @@ def start():
     session["max_attempts"] = game.max_attempts
     session["min_number"] = game.min_number
     session["max_number"] = game.max_number
+    session["game_over"] = game.game_over
 
     
     return render_template(
@@ -39,7 +42,7 @@ def start():
         attempts_left=game.max_attempts
     )
 
-@app.route("/guess", method=["POST"])
+@app.route("/guess", methods=["POST"])
 def guess():
     user_guess = int(request.form["guess"])
 
@@ -51,18 +54,20 @@ def guess():
 
     game.secret_number = session["secret_number"]
     game.attempts = session["attempts"]
+    game.game_over = session["game_over"]
 
     result = game.check_guess(user_guess)
 
     session["attempts"] = game.attempts
+    session["game_over"] = game.game_over
 
     return render_template(
-        "index.htmml",
+        "index.html",
         game_started=True,
         min_number=game.min_number,
         max_number=game.max_number,
         result=result,
-        attempts_left=game.max_attempts - game.attempts
+        attempts_left=max(0, game.max_attempts - game.attempts)
     )
 
 if __name__ == "__main__":
