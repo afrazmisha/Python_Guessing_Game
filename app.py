@@ -77,5 +77,25 @@ def end():
         attempts=game.attempts
     )
 
+@app.route("/reset", methods=["POST"])
+def reset():
+    choice = request.form["choice"]
+
+    if choice == "exit":
+        session.clear()
+        return "See you soon 👋"
+    
+    if choice == "change":
+        session.clear()
+        return redirect(url_for("index"))
+    
+    if choice == "same":
+        game = NumberGuessingGame.restore(session["game"])
+        game.reset_for_new_round()
+
+        session["game"] = game.serialize()
+
+        return redirect(url_for("guess_page"))
+
 if __name__ == "__main__":
     app.run(debug=True)

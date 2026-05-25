@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Game Over</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+</html>
+<body>
+    <div class="container">
+        {% if result.status == "won" %}
+
+            <h1>You Won 🎉</h1>
+
+        {% else %}
+
+            <h1>Game Over 😢</h1>
+
+        {% endif %}
+
+        <p>{{ result.message}}</p>
+
+        <h3>Play Again?</h3>
+
+        <div class="buttons">
+            
+            <form action="/restart" method="POST">
+                <button type="submit">
+                    Continue Same Difficulty
+                </button>
+            </form>
+
+            <form action="/" method="GET">
+                <button type="submit">
+                    Change Difficulty
+                </button>
+            </form>
+
+            <form action="/goodbye" method="GET">
+                <button type="submit">
+                    Exit Game
+                </button>
+            </form>
+        </div>
+    </div>    
+</body>
+</html>

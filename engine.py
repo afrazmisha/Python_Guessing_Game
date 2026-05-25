@@ -10,6 +10,7 @@ class NumberGuessingGame:
 
         self.attempts = 0
         self.game_over = False
+        self.last_result = None
 
     def check_guess(self, guess):
         if self.game_over:
@@ -20,35 +21,53 @@ class NumberGuessingGame:
 
         self.attempts += 1
 
-        #Too Low
+        # Too Low
         if guess < self.secret_number:
             self.last_result = "continue"
-            return self._handle_continue("Too Low")
+            result = "Too Low"
         
-        if guess > self.secret_number:
-            return self._handle_continue("Too High")
+        # Too High
+        elif guess > self.secret_number:
+            self.last_result = "continue"
+            result = "Too High"
         
-        self.game_over = True
-        self.last_result = "won" /"lost" /"continue"
-        return {
-             "message": "Correct!",
-             "status": "won",
-             "attempts": self.attempts
-             }
-    
-    def _handle_continue(self, message):
+        # Correct guess
+        else:
+            self.game_over = True
+            self.last_result = "won"
+            
+            return {
+                "message": "Correct!",
+                "status": "won",
+                "attempts": self.attempts
+            }
+        # Loss condition
         if self.attempts >= self.max_attempts:
             self.game_over = True
+            self.last_result = "lost"
+
             return {
-                "message": f"Game Over! Number was {self.secret_number}",
-                "status": "lost"
+                 "message": f"Game Over! Number was {self.secret_number}",
+                 "status": "lost",
+                 "attempts": self.attempts
             }
         
+        # Continue Game
         return {
-            "message": message,
-            "status": "continue",
-            "attempts_left": self.max_attempts - self.attempts
-            }
+             "message": result,
+             "status": "continue",
+             "attempts_left": self.max_attempts - self.attempts
+        }
+    
+    def reset_for_new_round(self):
+         self.secret_number = random.randint(
+              self.min_number,
+              self.max_number
+         )
+
+         self.attempts = 0
+         self.game_over = False
+         self.last_result = None
         
     def serialize(self):
             return {
@@ -57,7 +76,8 @@ class NumberGuessingGame:
                  "max_attempts": self.max_attempts,
                  "secret_number": self.secret_number,
                  "attempts": self.attempts,
-                 "game_over": self.game_over
+                 "game_over": self.game_over,
+                 "last_result": self.last_result
             }
     
     @staticmethod
@@ -71,4 +91,6 @@ class NumberGuessingGame:
             game.secret_number = data["secret_number"]
             game.attempts = data["attempts"]
             game.game_over = data["game_over"]
+            game.last_result = data.get("last_result")
+            
             return game
