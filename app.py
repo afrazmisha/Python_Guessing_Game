@@ -49,6 +49,7 @@ def guess():
     result = game.check_guess(user_guess)
 
     session["game"] = game.serialize()
+    session["result"] = result
 
     if game.game_over:
         return redirect(url_for("end"))
