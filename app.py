@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request, session, redirect, url_for 
+from flask import Flask, render_template, request, session, redirect, url_for
 from engine import NumberGuessingGame
 from config import DIFFICULTIES
-import random
 
 app = Flask(__name__)
 app.secret_key = "secret-key"
@@ -10,15 +9,14 @@ app.secret_key = "secret-key"
 def index():
     return render_template(
         "index.html",
+        state="start",
         difficulties=DIFFICULTIES,
-        game_started=False,
-        result=None
     )
 
+#COMPLETED
 @app.route("/start", methods=["POST"])
 def start():
-    difficulty = request.form["difficulty"]
-    settings = DIFFICULTIES[difficulty]
+    settings = DIFFICULTIES[request.form["difficulty"]]
 
     game = NumberGuessingGame(
         settings["min_number"],
@@ -27,43 +25,40 @@ def start():
     )
 
     session["game"] = game.serialize()
-    
+
     return render_template(
-        "index.html",
-        game_started=True,
-        game_over=False,
+        "play.html",
+        game=game,
         min_number=game.min_number,
         max_number=game.max_number,
-        attempts_left=game.max_attempts
+        attempts_left=game.max_attempts - game.attempts,
+        result=None
     )
 
+#COMPLETED
 @app.route("/guess", methods=["POST"])
 def guess():
     if "game" not in session:
         return redirect(url_for("index"))
-    
-    user_guess = int(request.form["guess"])
 
     game = NumberGuessingGame.restore(session["game"])
-
-    result = game.check_guess(user_guess)
+    result = game.check_guess(int(request.form["guess"]))
 
     session["game"] = game.serialize()
-    session["result"] = result
 
-    if game.game_over:
+    if result["status"] in ["won", "lost"]:
         return redirect(url_for("end"))
 
     return render_template(
-        "index.html",
-        game_started=True,
+        "play.html",
+        game=game,
         result=result,
         min_number=game.min_number,
         max_number=game.max_number,
-        attempts_left=max(0, game.max_attempts - game.attempts),
-        difficulties=DIFFICULTIES
+        attempts_left=game.max_attempts - game.attempts
     )
 
+#COMPLETED
 @app.route("/end")
 def end():
     if "game" not in session:
@@ -73,30 +68,33 @@ def end():
 
     return render_template(
         "end.html",
-        won=game.last_result == "won",
+        game=game,
+        won=(game.last_result == "won"),
         secret_number=game.secret_number,
         attempts=game.attempts
     )
-
-@app.route("/reset", methods=["POST"])
-def reset():
-    choice = request.form["choice"]
-
-    if choice == "exit":
-        session.clear()
-        return "See you soon 👋"
     
-    if choice == "change":
-        session.clear()
+#COMPLETED    
+@app.route("/restart", methods=["POST"])
+def restart():
+    if "game" not in session:
         return redirect(url_for("index"))
-    
-    if choice == "same":
-        game = NumberGuessingGame.restore(session["game"])
-        game.reset_for_new_round()
 
-        session["game"] = game.serialize()
+    # 1. restore existing game state
+    game = NumberGuessingGame.restore(session["game"])
 
-        return redirect(url_for("guess_page"))
+    # 2. reset it properly (NEW ROUND, SAME SETTINGS)
+    game.reset_for_new_round()
+
+    # 3. save back into session
+    session["game"] = game.serialize()
+
+    return redirect(url_for("index"))
+
+@app.route("/exit", methods=["POST"])
+def exit_game():
+    session.clear()
+    return render_template("goodbye.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

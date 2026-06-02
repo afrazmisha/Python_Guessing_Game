@@ -14,7 +14,7 @@
     <div class="container">
         <h1>Number Guessing Game</h1>
 
-        {% if not game_started %}
+        {% if state == "start" %}
             <form action="/start" method="POST">
 
                 <label>Select Difficulty</label>
@@ -23,48 +23,38 @@
 
                     {% for key, settings in difficulties.items() %}
 
-                        <option value="{{ key }}">
-                            {{ settings.name }}
-                        </option>
+                    <option value="{{ key }}">
+                        {{ settings.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit">
+                Start Game
+            </button>
 
-                    {% endfor %}
-
-                </select>
-
-                <button type="submit">
-                    Start Game
-                </button>
-                
             </form>
-        {% endif %}
+        {% elif state == "play" %}
 
-
-
-        <!-- Active Game-->
-        {% if game_started %}
             <h2>Guess between {{ min_number }} and {{ max_number }}</h2>
-
+            
             <p>Attempts Left: {{ attempts_left }}</p>
+
+            {% if result %}
+                <h3>{{ result.message }}</h3>
+            {% endif %}
 
             <form action="/guess" method="POST">
                 <input type="number" name="guess" required>
                 <button type="submit">Guess</button>
             </form>
-        {%  endif %}
-            
-        {% if result %}
-            <h3>
-                {{ result.message }}
-            </h3>
-         {% endif %}
 
-         {% if game_over %}
-            <form action="/" method="GET">
-                <button type="submit">
-                    Change Difficulty
-                </button>
-            </form>
-         {% endif %}
+        {% else %}
+
+            <p>Invalid state</p>
+
+        {% endif %}
     </div>
 </body>
+
 </html>

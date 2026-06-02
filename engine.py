@@ -2,6 +2,9 @@ import random
 
 class NumberGuessingGame:
     def __init__(self, min_number, max_number, max_attempts):
+        if None in (min_number, max_number, max_attempts):
+            raise ValueError("Invalid initialization")
+
         self.min_number = min_number
         self.max_number = max_number
         self.max_attempts = max_attempts
@@ -12,85 +15,58 @@ class NumberGuessingGame:
         self.game_over = False
         self.last_result = None
 
+    def _response(self, status, message):
+        return {
+            "status": status,
+            "message": message,
+            "attempts": self.attempts,
+            "attempts_left": self.max_attempts - self.attempts,
+            "secret_number": self.secret_number
+        }
+
     def check_guess(self, guess):
         if self.game_over:
-            return {
-                "message": "Game already ended!",
-                "status": "finished"
-            }
-
+            return self._response ("finished", "Game already ended")
+        
         self.attempts += 1
 
-        # Too Low
-        if guess < self.secret_number:
-            self.last_result = "continue"
-            result = "Too Low"
-        
-        # Too High
-        elif guess > self.secret_number:
-            self.last_result = "continue"
-            result = "Too High"
-        
-        # Correct guess
-        else:
+        if guess == self.secret_number:
             self.game_over = True
             self.last_result = "won"
-            
-            return {
-                "message": "Correct!",
-                "status": "won",
-                "attempts": self.attempts
-            }
-        # Loss condition
+            return self._response("won", "Correct!")
+
         if self.attempts >= self.max_attempts:
             self.game_over = True
             self.last_result = "lost"
+            return ("lost", f"Game Over! Number was {self.secret_number}")
 
-            return {
-                 "message": f"Game Over! Number was {self.secret_number}",
-                 "status": "lost",
-                 "attempts": self.attempts
-            }
-        
-        # Continue Game
-        return {
-             "message": result,
-             "status": "continue",
-             "attempts_left": self.max_attempts - self.attempts
-        }
-    
-    def reset_for_new_round(self):
-         self.secret_number = random.randint(
-              self.min_number,
-              self.max_number
-         )
+        if guess < self.secret_number:
+            return ("continue", "Too Low")
 
-         self.attempts = 0
-         self.game_over = False
-         self.last_result = None
-        
+        return self._response("continue", "Too High")
+
     def serialize(self):
-            return {
-                 "min": self.min_number,
-                 "max": self.max_number,
-                 "max_attempts": self.max_attempts,
-                 "secret_number": self.secret_number,
-                 "attempts": self.attempts,
-                 "game_over": self.game_over,
-                 "last_result": self.last_result
-            }
-    
+        return {
+            "min_number": self.min_number,
+            "max_number": self.max_number,
+            "max_attempts": self.max_attempts,
+            "secret_number": self.secret_number,
+            "attempts": self.attempts,
+            "game_over": self.game_over,
+            "last_result": self.last_result
+        }
+
     @staticmethod
     def restore(data):
-            game = NumberGuessingGame(
-                 data["min"],
-                 data["max"],
-                 data["max_attempts"]
-            )
+        game = NumberGuessingGame(
+            data["min_number"],
+            data["max_number"],
+            data["max_attempts"]
+        )
 
-            game.secret_number = data["secret_number"]
-            game.attempts = data["attempts"]
-            game.game_over = data["game_over"]
-            game.last_result = data.get("last_result")
-            
-            return game
+        game.secret_number = data["secret_number"]
+        game.attempts = data.get("attempts", 0)
+        game.game_over = data.get("game_over", False)
+        game.last_result = data.get("last_result")
+
+        return game

@@ -1,7 +1,6 @@
 from engine import NumberGuessingGame
 from config import DIFFICULTIES
 
-
 class GameUI:
     def choose_difficulty(self):
         print("\nSelect Difficulty:")
@@ -9,37 +8,48 @@ class GameUI:
         for k, v in DIFFICULTIES.items():
             print(f"{k}. {v['name']}")
 
-        choice = input("Choice: ")
-        return DIFFICULTIES[choice]
+        while True:
+            choice = input("Choice: ").strip()
+
+            if choice in DIFFICULTIES:
+                return DIFFICULTIES[choice]
+
+            print("Invalid choice. Try again.")
 
     def play(self):
         settings = self.choose_difficulty()
 
         engine = NumberGuessingGame(
+            settings["min_number"],
             settings["max_number"],
             settings["max_attempts"]
         )
 
-        engine.start()
+        print(f"\nGuess between {engine.min_number} and {engine.max_number}")
 
-        attempts = 0
+        while not engine.game_over:
+            try:
+                guess = int(input("Enter guess: "))
 
-        print(f"\nGuess between 1 and {settings['max_number']}")
+                if guess < engine.min_number or guess > engine.max_number:
+                    print(
+                        f"Enter number between "
+                        f"{engine.min_number} and {engine.max_number}"
+                    )
+                    continue
 
-        while attempts < settings["max_attempts"]:
-            guess = int(input("Enter guess: "))
-            attempts += 1
+            except ValueError:
+                print("Enter a valid number")
+                continue
 
             result = engine.check_guess(guess)
 
-            if result == "high":
-                print("Too High")
-            elif result == "low":
-                print("Too Low")
-            else:
-                print("Correct!")
-                print(f"Attempts: {attempts}")
-                return True
+            print(result["message"])
 
-        print(f"Game Over! Number was {engine.secret_number}")
-        return False
+            if result["status"] in ["won", "lost"]:
+                print(f"Attempts used: {engine.attempts}")
+                return result
+
+        return {
+            "status": "lost"
+        }
