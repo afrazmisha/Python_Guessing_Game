@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Game Over</title>
+    <title>Game Result</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
     <div class="container">
 
         {% if won %}
-            <h1>You Won 🎉</h1>
+        <h1>You Won 🎉</h1>
         {% else %}
-            <h1>Game Over 😢</h1>
+        <h1>Game Over 😢</h1>
         {% endif %}
 
         <p>The number was {{ secret_number }}</p>
-
         <p>Attempts used: {{ attempts }}</p>
 
         <h3>Play Again?</h3>
@@ -34,7 +35,8 @@
                 </button>
             </form>
 
-            <form action="/exit" method="GET">
+
+            <form action="/exit" method="POST">
                 <button type="submit">
                     Exit Game
                 </button>
@@ -45,4 +47,5 @@
     </div>
 
 </body>
+
 </html>

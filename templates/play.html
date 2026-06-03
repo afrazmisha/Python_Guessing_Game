@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Guessing Game</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
 
-    <body>
-        <div class="container">
-            <h1>Guess the Number</h1>
+<head>
+    <title>Number Guessing Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-            <p>Range: {{ min_number }} - {{ max_number }}</p>
+<body>
+    <div class="container">
+        <h1>Guess the Number</h1>
 
-            <p>Attempts left: {{ attempts_left }}</p>
+        <p>Range: {{ min_number }} - {{ max_number }}</p>
 
-            {% if result %}
-                <p class="message">
-                    {{ result.message }}
-                </p>
-            {% endif %}
+        <p>Attempts left: {{ attempts_left }}</p>
 
-            <form action="/guess" method="POST">
-                <input type="number" name="guess" required>
-                <button type="submit">Submit Guess</button>
-            </form>
-        </div>
-    </body>
+        {% if result %}
+        <p class="message">
+            {{ result.message }}
+        </p>
+        {% endif %}
+
+        <form action="/guess" method="POST" autocomplete="off">
+            <input type="number" name="guess" min="{{ min_number }}" max="{{ max_number }}" required>
+            <button type="submit">Submit Guess</button>
+        </form>
+    </div>
+</body>
+
 </html>

@@ -38,10 +38,10 @@ class NumberGuessingGame:
         if self.attempts >= self.max_attempts:
             self.game_over = True
             self.last_result = "lost"
-            return ("lost", f"Game Over! Number was {self.secret_number}")
+            return self._response("lost", f"Game Over! Number was {self.secret_number}")
 
         if guess < self.secret_number:
-            return ("continue", "Too Low")
+            return self._response("continue", "Too Low")
 
         return self._response("continue", "Too High")
 
