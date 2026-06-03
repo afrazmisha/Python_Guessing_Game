@@ -10,14 +10,15 @@
 
     <div class="container">
 
-        {% if won %}
-        <h1>You Won 🎉</h1>
+        {% if result.status == "won" %}
+            <h1>You Won 🎉</h1>
         {% else %}
-        <h1>Game Over 😢</h1>
+            <h1>Game Over 😢</h1>
         {% endif %}
 
         <p>The number was {{ secret_number }}</p>
-        <p>Attempts used: {{ attempts }}</p>
+        <p>Attempts used: {{ game.attempts }}</p>
+        <p>Attempts remaining: {{ game.max_attempts - game.attempts }}</p>
 
         <h3>Play Again?</h3>
 
