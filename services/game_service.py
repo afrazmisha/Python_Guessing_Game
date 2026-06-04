@@ -31,3 +31,27 @@ class GameService:
             game.max_attempts
         )
         return game
+    
+    @staticmethod
+    def game_from_state(state):
+        game = NumberGuessingGame(
+            state.min_number,
+            state.max_number,
+            state.max_attempts
+        )
+
+        game.secret_number = state.secret_number
+        game.attempts = state.attempts
+        game.game_over = state.game_over
+        game.last_result = state.last_result
+
+        return game
+    
+    @staticmethod
+    def update_state_from_game(state, game):
+        state.secret_number = game.secret_number
+        state.attempts = game.attempts
+        state.game_over = game.game_over
+        state.last_result = game.last_result
+
+        return state
