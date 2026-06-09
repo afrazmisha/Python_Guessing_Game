@@ -3,9 +3,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from services.game_service import GameService
 from config import DIFFICULTIES
 from models import db, GameState, User
+from datetime import timedelta
 
 app = Flask(__name__)
 app.secret_key = "secret-key"
+
+app.permanent_session_lifetime = timedelta(minutes=10)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///game.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -17,6 +20,9 @@ with app.app_context():
 
 @app.route("/")
 def index():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
     session.pop("game", None)
     session.pop("result", None)
     
@@ -30,6 +36,9 @@ def index():
 #COMPLETED
 @app.route("/start", methods=["POST"])
 def start():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
     difficulty = request.form["difficulty"]
     session["difficulty"] = difficulty
 
@@ -64,6 +73,9 @@ def start():
 #COMPLETED
 @app.route("/guess", methods=["POST"])
 def guess():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
     if "game_id" not in session:
         return redirect(url_for("index"))
     
@@ -97,6 +109,9 @@ def guess():
 #COMPLETED
 @app.route("/end")
 def end():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
     if "game_id" not in session:
         return redirect(url_for("index"))
     
@@ -122,6 +137,9 @@ def end():
 #COMPLETED    
 @app.route("/restart", methods=["POST"])
 def restart():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
     if "game_id" not in session:
         return redirect(url_for("index"))
     
@@ -164,6 +182,9 @@ def restart():
 def history():
     if "user_id" not in session:
         return redirect(url_for("login"))
+    
+    if "user_id" not in session:
+        return redirect(url_for("login"))
 
     games = GameState.query.filter_by(
         user_id=session["user_id"]
@@ -176,10 +197,18 @@ def history():
 
 @app.route("/stats")
 def stats():
-    total_games = GameState.query.count()
-    wins = GameState.query.filter_by(last_result="won").count()
-    losses = GameState.query.filter_by(last_result="lost").count()
-    in_progress = GameState.query.filter_by(game_over=False).count()
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    user_id = session["user_id"]
+
+    total_games = GameState.query.filter_by(user_id=user_id).count()
+    wins = GameState.query.filter_by(user_id=user_id, last_result="won").count()
+    losses = GameState.query.filter_by(user_id=user_id, last_result="lost").count()
+    in_progress = GameState.query.filter_by(user_id=user_id, game_over=False).count()
 
     completed_games = wins + losses
 
@@ -187,14 +216,20 @@ def stats():
     if completed_games > 0:
         win_rate = (wins / completed_games) * 100
 
-        completed_attempts = GameState.query.filter(GameState.game_over == True).all()
+    completed_attempts = GameState.query.filter_by(
+        user_id=user_id,
+        game_over=True
+    ).all()
 
     average_attempts = 0
     if completed_attempts:
         total_attempts = sum(game.attempts for game in completed_attempts)
         average_attempts = total_attempts / len(completed_attempts)
 
-    best_game = GameState.query.filter_by(last_result="won").order_by(GameState.attempts.asc()).first()
+    best_game = GameState.query.filter_by(
+        user_id=user_id,
+        last_result="won"
+    ).order_by(GameState.attempts.asc()).first()
 
     return render_template(
         "stats.html",
@@ -251,6 +286,7 @@ def login():
         if not check_password_hash(user.password_hash, password):
             return "Invalid username or password"
 
+        session.permanent = True
         session["user_id"] = user.id
         session["username"] = user.username
 
@@ -260,8 +296,7 @@ def login():
 
 @app.route("/logout")
 def logout():
-    session.pop("user_id", None)
-    session.pop("username", None)
+    session.clear()
 
     return redirect(url_for("login"))
 

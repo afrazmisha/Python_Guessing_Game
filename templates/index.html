@@ -11,11 +11,30 @@
 </head>
 
 <body>
+    <nav>
+        <a href="/">Home</a> |
+        <a href="/history">History</a> |
+        <a href="/stats">Stats</a> |
+        <a href="/logout">Logout</a>
+    </nav>
+
+    <br>
+
     <div class="container">
         <h1>Number Guessing Game</h1>
 
         {% if username %}
         <p>Welcome, {{ username }} 👋</p>
+
+        <a href="/history">View History</a>
+        <br>
+        <a href="/stats">View Statistics</a>
+        <br>
+        <a href="/logout">Logout</a>
+        {% else %}
+        <a href="/login">Login</a>
+        <br>
+        <a href="/signup">Signup</a>
         {% endif %}
 
         {% if state == "start" %}
@@ -52,12 +71,6 @@
         <p>Invalid state</p>
 
         {% endif %}
-        <br>
-        <a href="/history">View Game History</a>
-        <br>
-        <a href="/stats">View Statistics</a>
-        <br>
-        <a href="/logout">Logout</a>
     </div>
 </body>
 

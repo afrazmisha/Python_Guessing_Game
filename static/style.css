@@ -1,26 +1,79 @@
 body {
-    font-family: Arial;
-    background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 0;
 }
 
-.container {
-    width: 400px;
-    margin: 100px auto;
-    padding: 20px;
-
-    background: white;
-
-    border-radius: 10px;
-
+nav {
+    background: #222;
+    color: white;
+    padding: 15px;
     text-align: center;
 }
 
-button {
-    padding: 10px 20px;
-    cursor: pointer;
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
 }
 
-input, select {
+nav a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    max-width: 700px;
+    margin: 50px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+input,
+select,
+button {
     padding: 10px;
     margin: 10px;
+    font-size: 16px;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    background: #222;
+    color: white;
+}
+
+button:hover {
+    background: #444;
+}
+
+a {
+    color: #222;
+}
+
+.message {
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+th {
+    background: #222;
+    color: white;
 }

@@ -1,39 +1,36 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-<div class="container">
-    <h1>Login</h1>
+    <nav>
+        <a href="/login">Login</a> |
+        <a href="/signup">Signup</a>
+    </nav>
 
-    <form action="/login" method="POST">
-        <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            required
-        >
+    <div class="container">
+        <h1>Login</h1>
 
-        <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            required
-        >
+        <form action="/login" method="POST">
+            <input type="text" name="username" placeholder="Username" required>
 
-        <button type="submit">
-            Login
-        </button>
-    </form>
+            <input type="password" name="password" placeholder="Password" required>
 
-    <br>
+            <button type="submit">
+                Login
+            </button>
+        </form>
 
-    <a href="/signup">
-        Don't have an account? Signup
-    </a>
-</div>
+        <br>
+
+        <a href="/signup">
+            Don't have an account? Signup
+        </a>
+    </div>
 </body>
+
 </html>
