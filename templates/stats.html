@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Statistics Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<div class="container">
+    <h1>Statistics Dashboard</h1>
+
+    <p>Total Games: {{ total_games }}</p>
+    <p>Wins: {{ wins }}</p>
+    <p>Losses: {{ losses }}</p>
+    <p>In Progress: {{ in_progress }}</p>
+
+    <p>Win Rate: {{ "%.2f"|format(win_rate) }}%</p>
+    <p>Average Attempts: {{ "%.2f"|format(average_attempts) }}</p>
+
+    {% if best_game %}
+        <p>Best Game: {{ best_game.attempts }} attempts</p>
+    {% else %}
+        <p>Best Game: No wins yet</p>
+    {% endif %}
+
+    <br>
+
+    <a href="/">Back to Start</a>
+    <br>
+    <a href="/history">View History</a>
+</div>
+</body>
+</html>

@@ -1,35 +1,53 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Game History</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
 
-    <body>
-        <div class="container">
-            <h1>Game History</h1>
+<head>
+    <title>Game History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-            <table>
-                <tr>
-                    <th>ID</th>
-                    <th>Difficulty</th>
-                    <th>Attempts</th>
-                    <th>Result</th>
-                    <th>Secret Number</th>
-                </tr>
+<body>
+    <div class="container">
+        <h1>Game History</h1>
 
-                {% for game in games %}
-                <tr>
-                    <td>{{ game.id }}</td>
-                    <td>{{ game.difficulty }}</td>
-                    <td>{{ game.attempts }}</td>
-                    <td>{{ game.last_result }}</td>
-                    <td>{{ game.secret_number }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-            <br>
-            <a href="/">Back to Start</a>
-        </div>
-    </body>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Difficulty</th>
+                <th>Attempts</th>
+                <th>Result</th>
+                <th>Secret Number</th>
+            </tr>
+
+            {% for game in games %}
+            <tr>
+                <td>{{ game.id }}</td>
+                <td>{{ game.difficulty }}</td>
+                <td>{{ game.attempts }}</td>
+                <td>
+                    {% if game.game_over and game.last_result == 'won' %}
+                    Won
+                    {% elif game.game_over and game.last_result == 'lost' %}
+                    Lost
+                    {% elif game.game_over %}
+                    Finished
+                    {% else %}
+                    In Progress
+                    {% endif %}
+                </td>
+                <td>
+                    {% if game.game_over %}
+                    {{ game.secret_number }}
+                    {% else %}
+                    Hidden
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <br>
+        <a href="/">Back to Start</a>
+    </div>
+</body>
+
 </html>

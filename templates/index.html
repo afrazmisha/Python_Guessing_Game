@@ -14,6 +14,10 @@
     <div class="container">
         <h1>Number Guessing Game</h1>
 
+        {% if username %}
+        <p>Welcome, {{ username }} 👋</p>
+        {% endif %}
+
         {% if state == "start" %}
         <form action="/start" method="POST">
             <label>Select Difficulty</label>
@@ -50,6 +54,10 @@
         {% endif %}
         <br>
         <a href="/history">View Game History</a>
+        <br>
+        <a href="/stats">View Statistics</a>
+        <br>
+        <a href="/logout">Logout</a>
     </div>
 </body>
 
